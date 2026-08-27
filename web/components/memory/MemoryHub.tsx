@@ -15,6 +15,10 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { apiFetch, apiUrl } from "@/lib/api";
+import {
+  L3_WORKBENCH_SLOTS,
+  isL3WorkbenchSlot,
+} from "@/lib/memory-workbench-slots";
 import MemoryArchivedBanner from "@/components/memory/MemoryArchivedBanner";
 
 interface DocOverview {
@@ -45,8 +49,6 @@ const SURFACES = [
   "partner",
   "cowriter",
 ] as const;
-
-const L3_VISIBLE = ["recent", "profile", "scope"] as const;
 
 export default function MemoryHub() {
   const { t } = useTranslation();
@@ -79,7 +81,7 @@ export default function MemoryHub() {
 
   const l2Docs = (overview?.docs || []).filter((d) => d.layer === "L2");
   const l3Docs = (overview?.docs || []).filter(
-    (d) => d.layer === "L3" && d.key !== "preferences",
+    (d) => d.layer === "L3" && isL3WorkbenchSlot(d.key),
   );
   const l2Total = l2Docs.reduce((acc, d) => acc + d.entry_count, 0);
   const l3Total = l3Docs.reduce((acc, d) => acc + d.entry_count, 0);
@@ -154,10 +156,10 @@ export default function MemoryHub() {
           tag={t("Synthesis")}
           stat={l3Total.toLocaleString()}
           statLabel={t("propositions across {{n}} slots", {
-            n: l3Docs.length || L3_VISIBLE.length,
+            n: l3Docs.length || L3_WORKBENCH_SLOTS.length,
           })}
           detail={t(
-            "Cross-surface synthesis: profile, recent timeline, knowledge scope. Hedged claims with L2 evidence.",
+            "Cross-surface synthesis plus explicit preference records. Each slot has its own workbench.",
           )}
         />
       </div>

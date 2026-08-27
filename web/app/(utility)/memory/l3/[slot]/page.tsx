@@ -4,14 +4,13 @@ import { notFound, useParams, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 import MemoryWorkbench from "@/components/memory/MemoryWorkbench";
-
-const SLOTS = ["recent", "profile", "scope"];
+import { isL3WorkbenchSlot } from "@/lib/memory-workbench-slots";
 
 function L3WorkbenchInner() {
   const params = useParams<{ slot: string }>();
   const search = useSearchParams();
   const slot = params?.slot;
-  if (!slot || !SLOTS.includes(slot)) {
+  if (!slot || !isL3WorkbenchSlot(slot)) {
     notFound();
   }
   // L3 docs don't currently surface ?focus targets directly — but keep

@@ -20,12 +20,18 @@ import {
   PenLine,
   Pencil,
   Save,
+  SlidersHorizontal,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { apiFetch, apiUrl } from "@/lib/api";
+import {
+  L3_WORKBENCH_SLOTS,
+  canConsolidateMemoryDoc,
+  type L3WorkbenchSlot,
+} from "@/lib/memory-workbench-slots";
 import MemoryRunPanel from "@/components/memory/MemoryRunPanel";
 
 const MarkdownRenderer = dynamic(
@@ -161,11 +167,18 @@ const L2_NAV: NavEntry[] = [
   { key: "cowriter", icon: PenLine, label: "Co-writer" },
 ];
 
-const L3_NAV: NavEntry[] = [
-  { key: "recent", icon: Network, label: "Recent summary" },
-  { key: "profile", icon: Network, label: "User profile" },
-  { key: "scope", icon: Network, label: "Knowledge scope" },
-];
+const L3_NAV_META: Record<L3WorkbenchSlot, NavEntry> = {
+  recent: { key: "recent", icon: Network, label: "Recent summary" },
+  profile: { key: "profile", icon: Network, label: "User profile" },
+  scope: { key: "scope", icon: Network, label: "Knowledge scope" },
+  preferences: {
+    key: "preferences",
+    icon: SlidersHorizontal,
+    label: "Preference records",
+  },
+};
+
+const L3_NAV: NavEntry[] = L3_WORKBENCH_SLOTS.map((slot) => L3_NAV_META[slot]);
 
 type ViewMode = "plain" | "lines";
 
@@ -189,6 +202,7 @@ export default function MemoryWorkbench({
   const router = useRouter();
   const nav = layer === "L2" ? L2_NAV : L3_NAV;
   const [docKey, setDocKey] = useState<string>(initialKey || nav[0].key);
+  const canConsolidate = canConsolidateMemoryDoc(layer, docKey);
 
   useEffect(() => {
     if (initialKey) setDocKey(initialKey);
@@ -448,7 +462,7 @@ export default function MemoryWorkbench({
                 />
               </div>
             ) : (
-              <EmptyState t={t} />
+              <EmptyState isPreferenceDoc={!canConsolidate} t={t} />
             )}
           </div>
           {toast && (
@@ -460,12 +474,16 @@ export default function MemoryWorkbench({
 
         {/* ── Right: LLM work area ── */}
         <aside className="min-h-0">
-          <MemoryRunPanel
-            layer={layer}
-            docKey={docKey}
-            onRunComplete={handleRunComplete}
-            onDocUpdated={handleRunComplete}
-          />
+          {canConsolidate ? (
+            <MemoryRunPanel
+              layer={layer}
+              docKey={docKey}
+              onRunComplete={handleRunComplete}
+              onDocUpdated={handleRunComplete}
+            />
+          ) : (
+            <PreferenceMemoryPanel t={t} />
+          )}
         </aside>
       </div>
     </div>
@@ -627,12 +645,53 @@ function LineNumberedView({
   );
 }
 
-function EmptyState({ t }: { t: (k: string) => string }) {
+function EmptyState({
+  isPreferenceDoc = false,
+  t,
+}: {
+  isPreferenceDoc?: boolean;
+  t: (k: string) => string;
+}) {
   return (
     <div className="grid h-[300px] place-items-center text-center text-[13px] text-[var(--muted-foreground)]">
       <div className="max-w-sm space-y-2">
         <Workflow className="mx-auto h-6 w-6 opacity-60" />
-        <p>{t("Empty. Click Update to extract facts from your traces.")}</p>
+        <p>
+          {isPreferenceDoc
+            ? t(
+                "Preferences are written when you explicitly tell the chat assistant your preferences (style, language, format).",
+              )
+            : t("Empty. Click Update to extract facts from your traces.")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PreferenceMemoryPanel({ t }: { t: (k: string) => string }) {
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5">
+      <div className="flex items-start gap-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]">
+          <SlidersHorizontal className="h-4 w-4" />
+        </span>
+        <div className="space-y-2">
+          <div>
+            <h2 className="text-[14px] font-semibold text-[var(--foreground)]">
+              {t("Saved directly from conversations")}
+            </h2>
+            <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--muted-foreground)]">
+              {t(
+                "Preference records are kept separate from generated summaries and are never changed by automatic consolidation.",
+              )}
+            </p>
+          </div>
+          <p className="rounded-lg bg-[var(--muted)]/60 px-3 py-2 text-[11.5px] leading-relaxed text-[var(--muted-foreground)]">
+            {t(
+              "Tell the assistant what to remember, or use Edit raw to curate these records manually.",
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );
