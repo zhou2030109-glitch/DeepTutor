@@ -1,0 +1,58 @@
+<Window x:Class="DeepTutor.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="DeepTutor"
+        Icon="Assets/DeepTutor.ico"
+        Width="1360" Height="860"
+        MinWidth="980" MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#F7F8FA"
+        FontFamily="{StaticResource AppFont}">
+    <Grid>
+        <wv2:WebView2 x:Name="Browser" Visibility="Collapsed" />
+
+        <Grid x:Name="LoadingPanel" Background="#F7F8FA">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="380">
+                <Border Width="104" Height="104" CornerRadius="28" Background="White" Padding="18">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="26" ShadowDepth="5" Opacity="0.12" Color="#40536D" />
+                    </Border.Effect>
+                    <Image Source="Assets/logo.png" Stretch="Uniform" />
+                </Border>
+
+                <TextBlock Text="DeepTutor" FontSize="28" FontWeight="SemiBold"
+                           Foreground="#18202A" HorizontalAlignment="Center" Margin="0,24,0,8" />
+                <TextBlock x:Name="StatusText" Text="正在启动您的专属学习助手…"
+                           FontSize="14" Foreground="#687281" HorizontalAlignment="Center"
+                           TextAlignment="Center" TextWrapping="Wrap" />
+
+                <Grid Width="34" Height="34" Margin="0,24,0,0">
+                    <Ellipse Stroke="#DCE2EA" StrokeThickness="3" />
+                    <Path Stroke="#5B7CFA" StrokeThickness="3" StrokeStartLineCap="Round"
+                          Data="M 17,1 A 16,16 0 0 1 33,17">
+                        <Path.RenderTransform>
+                            <RotateTransform x:Name="SpinnerRotation" CenterX="17" CenterY="17" />
+                        </Path.RenderTransform>
+                        <Path.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation Storyboard.TargetName="SpinnerRotation"
+                                                         Storyboard.TargetProperty="Angle"
+                                                         From="0" To="360" Duration="0:0:0.9" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Path.Triggers>
+                    </Path>
+                </Grid>
+
+                <Button x:Name="RetryButton" Content="重试" Visibility="Collapsed"
+                        HorizontalAlignment="Center" Margin="0,22,0,0" Padding="24,9"
+                        Background="#18202A" Foreground="White" BorderThickness="0"
+                        Cursor="Hand" Click="RetryButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

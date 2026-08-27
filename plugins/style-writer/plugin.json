@@ -1,0 +1,15 @@
+{
+  "id": "style-writer",
+  "name": "风格写作",
+  "version": "0.2.0",
+  "enabled": true,
+  "injectScript": "frontend/inject.js",
+  "thirdParty": [
+    {
+      "name": "writing-dna-skill",
+      "source": "https://github.com/larashero3-dotcom/writing-dna-skill",
+      "license": "MIT",
+      "path": "vendor/writing-dna-skill"
+    }
+  ]
+}

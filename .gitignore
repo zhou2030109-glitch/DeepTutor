@@ -138,6 +138,12 @@ web/playwright-report/
 # Log files
 *.log
 
+# Local Windows desktop wrapper build/runtime output
+/desktop/bin/
+/desktop/obj/
+/app/
+/plugin-data/
+
 # ============================================
 # IDE and Editors
 # ============================================

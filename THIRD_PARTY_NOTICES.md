@@ -1,5 +1,19 @@
 # Third-party notices
 
+## Writing DNA Skill
+
+- Project: [larashero3-dotcom/writing-dna-skill](https://github.com/larashero3-dotcom/writing-dna-skill)
+- Source commit: `ee3d97ee27268004b5187d97711161f44fc4aae4`
+- License: MIT
+- Vendored path: `plugins/style-writer/vendor/writing-dna-skill`
+- Adapted workflow: isolated author corpus, editable DNA drafts, explicit
+  human approval, versioned profiles, and optional less-AI-tone rewriting.
+
+The complete upstream license and attribution are preserved at
+`plugins/style-writer/vendor/writing-dna-skill/LICENSE`. DeepTutor's desktop
+integration keeps each writing space under its own plugin-data directory and
+does not write the corpus or DNA profile into global memory.
+
 ## CSSwitch
 
 - Project: [SuperJJ007/CSSwitch](https://github.com/SuperJJ007/CSSwitch)
